@@ -6,10 +6,10 @@ use Kwiki::Installer '-base';
 
 #use Kwiki::ShortcutLinks::Config;
 
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 
 const class_title => 'Shortcut Links';
-const class_id => 'shortcut_links';
+const class_id    => 'shortcut_links';
 
 field shortcuts => undef;
 
@@ -29,29 +29,22 @@ use Spoon::Formatter ();
 use base 'Spoon::Formatter::WaflPhrase';
 
 sub html {
-    my $args = $self->arguments;
-    my $key = $self->method;
+    my $text = $self->arguments;
+    my $key  = $self->method;
+    my $shortcut = $self->hub->registry->lookup->{shortcut_links}{$key}[1];
 
-    my $shortcuts = $self->hub->registry->lookup->{shortcut_links};
-    my $shortcut = $shortcuts->{$key}[1];
     my ($url_prefix, $link_prefix) = ($shortcut =~ /^(\S+)\s*(.*)?$/);
+    my ($url_param,  $link_text)   = ($text =~ /\A(.+?)(?:\|(.*))?\Z/);
+
+    $link_text ||= ($link_prefix ? "$link_prefix " : '')
+                 . $self->html_escape($url_param);
 
     my $url = $url_prefix;
-    if ($url =~ /%s/) {
-	$url =~ s/%s/$args/g;
-    } else {
-	$url .= $self->uri_escape($args);
-    }
+    $url_param = $self->uri_escape($url_param);
+    $url .= "%s" unless ($url =~ /%s/);
+    $url =~ s/%s/$url_param/g;
 
-    $link_prefix ||= '';
-    $link_prefix .= ' ' if $link_prefix;
-
-    join('', 
-         '<a href="', $url, '">',
-	 $link_prefix,
-         $self->html_escape($args),
-	 '</a>'
-        );
+    qq{<a href="$url">$link_text</a>};
 }
 
 package Kwiki::ShortcutLinks::Config;
@@ -114,6 +107,13 @@ will render C<{rt:1234}> as:
 
   <a href="http://ticket-serv/Ticket/Display.html?id=1234">RT Ticket 1234</a>
 
+If you follow the shortcut argument by a pipe and some more text, that text
+will be used for the link text, instead of the argument and any leader.  So,
+for the above definition of C<rt>, C<{rt:1234|A Hateful Problem}> would render
+as:
+
+  <a href="http://ticket-serv/Ticket/Display.html?id=1234">A Hateful Problem</a>
+
 The shortcut can contain the string C<%s>, which will be replaced by
 the wafl phrase arguments.  (If there is no C<%s>, the arguments are
 appended to the shortcut expansion, as in the examples above.)  So the
@@ -130,7 +130,9 @@ and the shortcut C<{wikipedia:Cambridge}> will render as
 Michael Gray <mjg17@eng.cam.ac.uk>
 
 Thanks to Alexander Goller for the C<%s> suggestion,
-C<extra_shortcuts.yaml> and his general support!
+C<extra_shortcuts.yaml> and his general support.
+Thanks to Ricardo Signes for the pipe patch to allow link text 
+to be overridden.
 
 =head1 SEE ALSO
 

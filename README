@@ -39,6 +39,13 @@ DESCRIPTION
 
       <a href="http://ticket-serv/Ticket/Display.html?id=1234">RT Ticket 1234</a>
 
+    If you follow the shortcut argument by a pipe and some more text, that
+    text will be used for the link text, instead of the argument and any
+    leader. So, for the above definition of "rt", "{rt:1234|A Hateful
+    Problem}" would render as:
+
+      <a href="http://ticket-serv/Ticket/Display.html?id=1234">A Hateful Problem</a>
+
     The shortcut can contain the string %s, which will be replaced by the
     wafl phrase arguments. (If there is no %s, the arguments are appended to
     the shortcut expansion, as in the examples above.) So the config entry:
@@ -53,7 +60,8 @@ AUTHORS
     Michael Gray <mjg17@eng.cam.ac.uk>
 
     Thanks to Alexander Goller for the %s suggestion, "extra_shortcuts.yaml"
-    and his general support!
+    and his general support. Thanks to Ricardo Signes for the pipe patch to
+    allow link text to be overridden.
 
 SEE ALSO
     Kwiki

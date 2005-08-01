@@ -1,5 +1,5 @@
 name: Kwiki-ShortcutLinks
-version: 0.02
+version: 0.03
 abstract: WAFL shortcuts for common URI links
 author: Michael Gray <mjg17@eng.cam.ac.uk>
 license: perl

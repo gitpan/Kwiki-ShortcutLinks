@@ -1,3 +1,8 @@
+version: 0.03
+date:	 Mon Aug  1 13:30:00 BST 2005
+changes:
+- Support link text override via "|alttext", as suggested by Ricardo Signes.
+---
 version: 0.02
 date:	 Thu Jul  8 15:35:32 BST 2004
 changes:
